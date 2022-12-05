@@ -1,6 +1,8 @@
 import torch
 import gym
 import numpy as np
+import pickle
+from os import path
 
 from neat.phenotype.feed_forward import FeedForwardNet
 
@@ -16,7 +18,11 @@ class PoleBalanceConfig:
     ACTIVATION = 'sigmoid'
     SCALE_ACTIVATION = 4.9
 
-    FITNESS_THRESHOLD = 100000.0
+    solution_path = './images/pole-balancing-solution.pkl'
+    if not path.exists(solution_path):
+        FITNESS_THRESHOLD = 500.0
+    else:
+        FITNESS_THRESHOLD = 1000.0
 
     POPULATION_SIZE = 150
     NUMBER_OF_GENERATIONS = 150
@@ -41,21 +47,31 @@ class PoleBalanceConfig:
 
     def fitness_fn(self, genome):
         # OpenAI Gym
-        env = gym.make('LongCartPole-v0')
+        env = gym.make('CartPole-v1')
         done = False
         observation = env.reset()
 
         fitness = 0
         phenotype = FeedForwardNet(genome, self)
+        if path.exists(self.solution_path):
+            with open(self.solution_path, 'rb') as f:
+                solution = pickle.load(f)
+            solution_phenotype = FeedForwardNet(solution, self)
 
         while not done:
             observation = np.array([observation])
             input = torch.Tensor(observation).to(self.DEVICE)
 
             pred = round(float(phenotype(input)))
+            if path.exists(self.solution_path):
+                sol_pred = round(float(solution_phenotype(input)))
+                reward_extra = sol_pred*pred + (1-sol_pred)*(1-pred)
+            else:
+                reward_extra = 0
+
             observation, reward, done, info = env.step(pred)
 
-            fitness += reward
+            fitness += reward + reward_extra
         env.close()
 
         return fitness

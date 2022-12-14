@@ -18,12 +18,17 @@ logger.info(c.PoleBalanceConfig.DEVICE)
 neat = pop.Population(c.PoleBalanceConfig)
 solution, generation = neat.run()
 solution_path = './images/pole-balancing-solution.pkl'
+solution_fitness_path = './images/pole-balancing-fitness.pkl'
 if not path.exists(solution_path):
     with open(solution_path, 'wb') as f:
         pickle.dump(solution, f)
+    with open(solution_fitness_path, 'wb') as f:
+        pickle.dump(neat.best_fitness, f)
 else:
     with open(solution_path.replace('.pkl', '-explained.pkl'), 'wb') as f:
         pickle.dump(solution, f)
+    with open(solution_fitness_path, 'wb') as f:
+        pickle.dump(neat.best_fitness, f)
 
 @render_browser
 def Best_run(solution, logger):

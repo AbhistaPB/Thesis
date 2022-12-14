@@ -10,22 +10,28 @@ from neat.phenotype.feed_forward import FeedForwardNet
 class PoleBalanceConfig:
     DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     VERBOSE = True
+    version = 'V2'
 
-    NUM_INPUTS = 4
+    solution_path = './images/pole-balancing-solution.pkl'
+    if not path.exists(solution_path):
+        FITNESS_THRESHOLD = 500.0
+        NUM_INPUTS = 4
+    else:
+        FITNESS_THRESHOLD = 1000.0
+        if version == 'V1':
+            NUM_INPUTS = 10
+        elif version == 'V2':
+            NUM_INPUTS = 10
+        else:
+            NUM_INPUTS = 4
     NUM_OUTPUTS = 1
     USE_BIAS = True
 
     ACTIVATION = 'sigmoid'
     SCALE_ACTIVATION = 4.9
 
-    solution_path = './images/pole-balancing-solution.pkl'
-    if not path.exists(solution_path):
-        FITNESS_THRESHOLD = 500.0
-    else:
-        FITNESS_THRESHOLD = 1000.0
-
     POPULATION_SIZE = 150
-    NUMBER_OF_GENERATIONS = 150
+    NUMBER_OF_GENERATIONS = 50
     SPECIATION_THRESHOLD = 3.0
 
     CONNECTION_MUTATION_RATE = 0.80
@@ -60,9 +66,41 @@ class PoleBalanceConfig:
 
         while not done:
             observation = np.array([observation])
-            input = torch.Tensor(observation).to(self.DEVICE)
+            if path.exists(self.solution_path):
+                if self.version == 'V1':
+                    pos_left = 1.0 if observation[0][0] < - 0.8 else 0.0
+                    pos_mid = 1.0 if ((observation[0][0] >= -0.8) and (observation[0][0] <= 0.8)) else 0.0
+                    pos_right = 1.0 if observation[0][0] > 0.8 else 0.0
+                    vel_high = 1.0 if ((observation[0][1] > 5) or (observation[0][1] < -5)) else 0.0
+                    vel_low = 1.0 if ((observation[0][1] <= 5) and (observation[0][1] >= -5)) else 0.0
+                    pole_left = 1.0 if observation[0][2] < -0.07 else 0.0
+                    pole_mid = 1.0 if ((observation[0][2] >= -0.07) and (observation[0][2] <=0.07)) else 0.0
+                    pole_right = 1.0 if observation[0][2] > 0.07 else 0.0
+                    avel_high = 1.0 if ((observation[0][3] < -5) or (observation[0][3] > 5)) else 0.0
+                    avel_low = 1.0 if ((observation[0][3] >= -5) and (observation[0][3] <= 5)) else 0.0
+                    new_observation = np.array([np.array([pos_left, pos_mid, pos_right, vel_high, vel_low,\
+                                                pole_left, pole_mid, pole_right, avel_high, avel_low])])
+                elif self.version == 'V2':
+                    pos_left = observation[0][0] if observation[0][0] < - 0.8 else 0.0
+                    pos_mid = observation[0][0] if ((observation[0][0] >= -0.8) and (observation[0][0] <= 0.8)) else 0.0
+                    pos_right = observation[0][0] if observation[0][0] > 0.8 else 0.0
+                    vel_high = observation[0][1] if ((observation[0][1] > 5) or (observation[0][1] < -5)) else 0.0
+                    vel_low = observation[0][1] if ((observation[0][1] <= 5) and (observation[0][1] >= -5)) else 0.0
+                    pole_left = observation[0][2] if observation[0][2] < -0.07 else 0.0
+                    pole_mid = observation[0][2] if ((observation[0][2] >= -0.07) and (observation[0][2] <=0.07)) else 0.0
+                    pole_right = observation[0][2] if observation[0][2] > 0.07 else 0.0
+                    avel_high = observation[0][3] if ((observation[0][3] < -5) or (observation[0][3] > 5)) else 0.0
+                    avel_low = observation[0][3] if ((observation[0][3] >= -5) and (observation[0][3] <= 5)) else 0.0
+                    new_observation = np.array([np.array([pos_left, pos_mid, pos_right, vel_high, vel_low,\
+                                                pole_left, pole_mid, pole_right, avel_high, avel_low])])
+            else:
+                new_observation = observation
+            
 
-            pred = round(float(phenotype(input)))
+            input_new = torch.Tensor(new_observation).to(self.DEVICE)
+            input = torch.Tensor(observation).to(self.DEVICE)
+            
+            pred = round(float(phenotype(input_new)))
             if path.exists(self.solution_path):
                 sol_pred = round(float(solution_phenotype(input)))
                 reward_extra = sol_pred*pred + (1-sol_pred)*(1-pred)

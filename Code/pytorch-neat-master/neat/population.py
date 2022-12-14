@@ -21,6 +21,7 @@ class Population:
         self.Config = config()
         self.population = self.set_initial_population()
         self.species = []
+        self.best_fitness = []
 
         for genome in self.population:
             self.speciate(genome, 0)
@@ -95,9 +96,11 @@ class Population:
                 self.speciate(genome, generation)
 
             if best_genome.fitness >= self.Config.FITNESS_THRESHOLD:
+                self.best_fitness.append(best_genome.fitness)
                 return best_genome, generation
 
             # Generation Stats
+            self.best_fitness.append(best_genome.fitness)
             if self.Config.VERBOSE:
                 logger.info(f'Finished Generation {generation}')
                 logger.info(f'Best Genome Fitness: {best_genome.fitness}')

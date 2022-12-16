@@ -1,0 +1,65 @@
+wandb_version: 1
+
+Connection addition rate:
+  desc: null
+  value: 0.5
+Connection change rate:
+  desc: null
+  value: 0.9
+Fitness Threshold:
+  desc: null
+  value: 1000.0
+GYM environmentGenerations:
+  desc: null
+  value: 20
+Inputs:
+  desc: null
+  value: 10
+Max-Species:
+  desc: null
+  value: 3.0
+Mutation Rate:
+  desc: null
+  value: 0.8
+Name/Version:
+  desc: null
+  value: V2
+Node Mutation rate:
+  desc: null
+  value: 0.03
+Outputs:
+  desc: null
+  value: 1
+Population:
+  desc: null
+  value: 150
+Re-enable rate:
+  desc: null
+  value: 0.25
+Saved population:
+  desc: null
+  value: 0.8
+_wandb:
+  desc: null
+  value:
+    cli_version: 0.13.5
+    framework: torch
+    is_jupyter_run: false
+    is_kaggle_kernel: false
+    python_version: 3.9.1
+    start_time: 1671146719.520503
+    t:
+      1:
+      - 1
+      - 55
+      2:
+      - 1
+      - 55
+      3:
+      - 13
+      - 16
+      - 23
+      4: 3.9.1
+      5: 0.13.5
+      8:
+      - 5

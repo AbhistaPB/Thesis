@@ -1,0 +1,137 @@
+{
+    "os": "Linux-3.10.0-1160.80.1.el7.x86_64-x86_64-with-glibc2.17",
+    "python": "3.9.1",
+    "heartbeatAt": "2022-12-15T22:49:02.153605",
+    "startedAt": "2022-12-15T22:49:01.218605",
+    "docker": null,
+    "cuda": null,
+    "args": [],
+    "state": "running",
+    "program": "/zhome/2f/1/160237/Thesis/Code/pytorch-neat-master/pole_run.py",
+    "codePath": "Code/pytorch-neat-master/pole_run.py",
+    "git": {
+        "remote": "https://github.com/AbhistaPB/Thesis.git",
+        "commit": "fc13015e748dc1739e2a4afd9fc093a4e4278493"
+    },
+    "email": "s210246@student.dtu.dk",
+    "root": "/zhome/2f/1/160237/Thesis",
+    "host": "gbarlogin2",
+    "username": "s210246",
+    "executable": "/zhome/2f/1/160237/miniconda3/bin/python3",
+    "cpu_count": 20,
+    "cpu_count_logical": 20,
+    "cpu_freq": {
+        "current": 1274.4580500000004,
+        "min": 1200.0,
+        "max": 3300.0
+    },
+    "cpu_freq_per_core": [
+        {
+            "current": 1199.865,
+            "min": 1200.0,
+            "max": 3300.0
+        },
+        {
+            "current": 1205.895,
+            "min": 1200.0,
+            "max": 3300.0
+        },
+        {
+            "current": 1199.865,
+            "min": 1200.0,
+            "max": 3300.0
+        },
+        {
+            "current": 1389.819,
+            "min": 1200.0,
+            "max": 3300.0
+        },
+        {
+            "current": 1200.024,
+            "min": 1200.0,
+            "max": 3300.0
+        },
+        {
+            "current": 1399.658,
+            "min": 1200.0,
+            "max": 3300.0
+        },
+        {
+            "current": 1200.341,
+            "min": 1200.0,
+            "max": 3300.0
+        },
+        {
+            "current": 1211.291,
+            "min": 1200.0,
+            "max": 3300.0
+        },
+        {
+            "current": 1201.452,
+            "min": 1200.0,
+            "max": 3300.0
+        },
+        {
+            "current": 1284.448,
+            "min": 1200.0,
+            "max": 3300.0
+        },
+        {
+            "current": 1214.465,
+            "min": 1200.0,
+            "max": 3300.0
+        },
+        {
+            "current": 1498.681,
+            "min": 1200.0,
+            "max": 3300.0
+        },
+        {
+            "current": 1294.604,
+            "min": 1200.0,
+            "max": 3300.0
+        },
+        {
+            "current": 1199.865,
+            "min": 1200.0,
+            "max": 3300.0
+        },
+        {
+            "current": 1199.865,
+            "min": 1200.0,
+            "max": 3300.0
+        },
+        {
+            "current": 1398.864,
+            "min": 1200.0,
+            "max": 3300.0
+        },
+        {
+            "current": 1199.865,
+            "min": 1200.0,
+            "max": 3300.0
+        },
+        {
+            "current": 1395.056,
+            "min": 1200.0,
+            "max": 3300.0
+        },
+        {
+            "current": 1590.881,
+            "min": 1200.0,
+            "max": 3300.0
+        },
+        {
+            "current": 1200.024,
+            "min": 1200.0,
+            "max": 3300.0
+        }
+    ],
+    "disk": {
+        "total": 76.71173095703125,
+        "used": 10.555721282958984
+    },
+    "memory": {
+        "total": 125.36462783813477
+    }
+}

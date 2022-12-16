@@ -45,7 +45,7 @@ def Best_run(solution, logger):
         phenotype = FeedForwardNet(solution, c.PoleBalanceConfig)
 
         while not done:
-            yield env.render(mode='rgb_array')
+            # yield env.render(mode='rgb_array')
             input = torch.Tensor([observation]).to(c.PoleBalanceConfig.DEVICE)
 
             pred = round(float(phenotype(input)))

@@ -10,9 +10,13 @@ from neat.phenotype.feed_forward import FeedForwardNet
 class PoleBalanceConfig:
     DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     VERBOSE = True
-    version = 'V2'
 
+    version = 'V2'
+    log_wandb = True
+    name = 'Pure NEAT'
     solution_path = './images/pole-balancing-solution.pkl'
+    Environment = 'CartPole-v1'
+    
     if not path.exists(solution_path):
         FITNESS_THRESHOLD = 500.0
         NUM_INPUTS = 4
@@ -31,7 +35,7 @@ class PoleBalanceConfig:
     SCALE_ACTIVATION = 4.9
 
     POPULATION_SIZE = 150
-    NUMBER_OF_GENERATIONS = 50
+    NUMBER_OF_GENERATIONS = 20
     SPECIATION_THRESHOLD = 3.0
 
     CONNECTION_MUTATION_RATE = 0.80
@@ -53,7 +57,7 @@ class PoleBalanceConfig:
 
     def fitness_fn(self, genome):
         # OpenAI Gym
-        env = gym.make('CartPole-v1')
+        env = gym.make(self.Environment)
         done = False
         observation = env.reset()
 

@@ -2,6 +2,7 @@ import logging
 import random
 
 import numpy as np
+import wandb
 
 import neat.utils as utils
 from neat.genotype.genome import Genome
@@ -27,6 +28,32 @@ class Population:
             self.speciate(genome, 0)
 
     def run(self):
+        if self.Config.log_wandb:
+            logger.info('setting wandb logging system')
+            wandb.init(
+                project="Logic and NEAT", 
+                entity="abhista", 
+                name=self.Config.name,
+                config={
+                    'Name': self.Config.version,
+                    'GYM environment': self.Config.Environment,
+                    'NEAT config/Generations': self.Config.NUMBER_OF_GENERATIONS,
+                    'NEAT config/Fitness Threshold': self.Config.FITNESS_THRESHOLD,
+                    'NEAT config/Inputs': self.Config.NUM_INPUTS,
+                    'NEAT config/Outputs': self.Config.NUM_OUTPUTS,
+                    'NEAT config/Population': self.Config.POPULATION_SIZE,
+                    'NEAT config/Max-Species': self.Config.SPECIATION_THRESHOLD,
+                    'NEAT config/Mutation Rate': self.Config.CONNECTION_MUTATION_RATE,
+                    'NEAT config/Connection change rate':self.Config.CONNECTION_PERTURBATION_RATE,
+                    'NEAT config/Node Mutation rate': self.Config.ADD_NODE_MUTATION_RATE,
+                    'NEAT config/Connection addition rate': self.Config.ADD_CONNECTION_MUTATION_RATE,
+                    'NEAT config/Re-enable rate': self.Config.CROSSOVER_REENABLE_CONNECTION_GENE_RATE,
+                    'NEAT config/Saved population': self.Config.PERCENTAGE_TO_SAVE
+                }
+            )
+        else:
+            logger.info('NO WANDB LOG')
+
         for generation in range(1, self.Config.NUMBER_OF_GENERATIONS):
             # Get Fitness of Every Genome
             for genome in self.population:
@@ -105,6 +132,14 @@ class Population:
                 logger.info(f'Finished Generation {generation}')
                 logger.info(f'Best Genome Fitness: {best_genome.fitness}')
                 logger.info(f'Best Genome Length {len(best_genome.connection_genes)}\n')
+            
+            if self.Config.log_wandb:
+                wandb.log({
+                    'Best-Fitness': max_fitness,
+                    'Worst-Fitness': min_fitness,
+                    'Genome length': len(best_genome.connection_genes),
+                    'Number of Species': len(remaining_species)
+                })
 
         return None, None
 

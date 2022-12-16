@@ -11,8 +11,8 @@ class PoleBalanceConfig:
     DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     VERBOSE = True
 
-    version = 'V2'
     log_wandb = True
+    version = 'V2'
     name = 'Pure NEAT'
     solution_path = './images/pole-balancing-solution.pkl'
     Environment = 'CartPole-v1'
@@ -35,7 +35,7 @@ class PoleBalanceConfig:
     SCALE_ACTIVATION = 4.9
 
     POPULATION_SIZE = 150
-    NUMBER_OF_GENERATIONS = 20
+    NUMBER_OF_GENERATIONS = 10
     SPECIATION_THRESHOLD = 3.0
 
     CONNECTION_MUTATION_RATE = 0.80
@@ -67,7 +67,6 @@ class PoleBalanceConfig:
             with open(self.solution_path, 'rb') as f:
                 solution = pickle.load(f)
             solution_phenotype = FeedForwardNet(solution, self)
-        else:
             explanation_left = []
             explanation_right = []
 

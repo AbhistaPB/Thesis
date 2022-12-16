@@ -57,7 +57,8 @@ class Population:
         for generation in range(1, self.Config.NUMBER_OF_GENERATIONS):
             # Get Fitness of Every Genome
             for genome in self.population:
-                genome.fitness = max(0, self.Config.fitness_fn(genome))
+                fitness, explanation = self.Config.fitness_fn(genome)
+                genome.fitness = max(0, fitness)
 
             best_genome = utils.get_best_genome(self.population)
 

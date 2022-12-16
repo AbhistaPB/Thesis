@@ -67,6 +67,9 @@ class PoleBalanceConfig:
             with open(self.solution_path, 'rb') as f:
                 solution = pickle.load(f)
             solution_phenotype = FeedForwardNet(solution, self)
+        else:
+            explanation_left = []
+            explanation_right = []
 
         while not done:
             observation = np.array([observation])
@@ -114,6 +117,24 @@ class PoleBalanceConfig:
             observation, reward, done, info = env.step(pred)
 
             fitness += reward + reward_extra
+            if self.version != 'V0':
+                explained = ''
+                explained += ' and pos_left' if pos_left != 0 else ''
+                explained += ' and pos_mid' if pos_mid != 0 else ''
+                explained += ' and pos_right' if pos_right != 0 else ''
+                explained += ' and vel_high' if vel_high != 0 else ''
+                explained += ' and vel_low' if vel_low != 0 else ''
+                explained += ' and pole_left' if pole_left != 0 else ''
+                explained += ' and pole_mid' if pole_mid != 0 else ''
+                explained += ' and pole_right' if pole_right != 0 else ''
+                explained += ' and avel_high' if avel_high != 0 else ''
+                explained += ' and avel_low' if pole_left != 0 else ''
+                if sol_pred == 1.0:
+                    explanation_right.append(explained[5:])
+                elif sol_pred == 0.0:
+                    explanation_left.append(explained[5:])
+
+
         env.close()
 
-        return fitness
+        return fitness, explanation_right

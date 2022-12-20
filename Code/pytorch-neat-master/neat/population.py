@@ -59,6 +59,7 @@ class Population:
             for genome in self.population:
                 fitness, explanation = self.Config.fitness_fn(genome)
                 genome.fitness = max(0, fitness)
+                genome.explanation = explanation
 
             best_genome = utils.get_best_genome(self.population)
 
@@ -123,15 +124,13 @@ class Population:
             for genome in self.population:
                 self.speciate(genome, generation)
 
-            if best_genome.fitness >= self.Config.FITNESS_THRESHOLD:
-                self.best_fitness.append(best_genome.fitness)
-                return best_genome, generation
-
             # Generation Stats
             self.best_fitness.append(best_genome.fitness)
             if self.Config.VERBOSE:
                 logger.info(f'Finished Generation {generation}')
                 logger.info(f'Best Genome Fitness: {best_genome.fitness}')
+                logger.info(f'Explanation: {best_genome.explanation[-1]}')
+                logger.info(f'Explanation length: {len(best_genome.explanation)}')
                 logger.info(f'Best Genome Length {len(best_genome.connection_genes)}\n')
             
             if self.Config.log_wandb:
@@ -139,8 +138,13 @@ class Population:
                     'Best-Fitness': max_fitness,
                     'Worst-Fitness': min_fitness,
                     'Genome length': len(best_genome.connection_genes),
-                    'Number of Species': len(remaining_species)
+                    'Number of Species': len(remaining_species),
+                    'Explanation length': len(best_genome.explanation)
                 })
+
+            if best_genome.fitness >= self.Config.FITNESS_THRESHOLD:
+                self.best_fitness.append(best_genome.fitness)
+                return best_genome, generation
 
         return None, None
 

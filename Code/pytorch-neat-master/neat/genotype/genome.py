@@ -18,6 +18,7 @@ class Genome:
         self.fitness = None
         self.adjusted_fitness = None
         self.species = None
+        self.explaination = []
 
     def add_connection_mutation(self):
         """

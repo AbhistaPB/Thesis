@@ -15,6 +15,8 @@ class Species:
         self.fitness = None
         self.adjusted_fitness = None
         self.last_improved = generation
+        self.best_fitness = 0
+        self.worst_fitness = 0
 
     @staticmethod
     def species_distance(genome_1, genome_2):

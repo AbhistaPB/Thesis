@@ -33,7 +33,7 @@ class Population:
             wandb.init(
                 project="Logic and NEAT", 
                 entity="abhista", 
-                name=self.Config.name,
+                name=self.Config.name + ' TEST',
                 config={
                     'Name': self.Config.version,
                     'GYM environment': self.Config.Environment,
@@ -107,6 +107,8 @@ class Population:
                 purge_index = int(self.Config.PERCENTAGE_TO_SAVE * len(cur_members))
                 purge_index = max(2, purge_index)
                 cur_members = cur_members[:purge_index]
+                species.best_fitness = cur_members[0].fitness
+                species.worst_fitness = cur_members[-1].fitness
 
                 for i in range(size):
                     parent_1 = random.choice(cur_members)
@@ -124,23 +126,35 @@ class Population:
             for genome in self.population:
                 self.speciate(genome, generation)
 
+            #
+
             # Generation Stats
             self.best_fitness.append(best_genome.fitness)
             if self.Config.VERBOSE:
                 logger.info(f'Finished Generation {generation}')
                 logger.info(f'Best Genome Fitness: {best_genome.fitness}')
+                logger.info(f'Best Genome Species: {best_genome.species}')
+                logger.info(f'Worst fitness of the best genome species: {self.species[best_genome.species].worst_fitness}')
                 logger.info(f'Explanation: {best_genome.explanation[-1]}')
                 logger.info(f'Explanation length: {len(best_genome.explanation)}')
                 logger.info(f'Best Genome Length {len(best_genome.connection_genes)}\n')
             
             if self.Config.log_wandb:
-                wandb.log({
+                wandb_dict = {
                     'Best-Fitness': max_fitness,
                     'Worst-Fitness': min_fitness,
                     'Genome length': len(best_genome.connection_genes),
                     'Number of Species': len(remaining_species),
                     'Explanation length': len(best_genome.explanation)
-                })
+                }
+                
+                for i, species in enumerate(self.species):
+                    if i % 5 == 0:
+                        wandb_dict['Species ' + str(i) + ' Best'] = species.best_fitness
+                        wandb_dict['Species ' + str(i) + ' Worst'] = species.worst_fitness
+                    wandb_dict['Species ' + str(i) + 'Adjusted fitness'] = species.adjusted_fitness
+    
+                wandb.log(wandb_dict)
 
             if best_genome.fitness >= self.Config.FITNESS_THRESHOLD:
                 self.best_fitness.append(best_genome.fitness)

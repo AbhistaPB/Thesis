@@ -1,0 +1,217 @@
+{
+    "os": "Linux-3.10.0-1160.80.1.el7.x86_64-x86_64-with-glibc2.17",
+    "python": "3.9.1",
+    "heartbeatAt": "2022-12-20T17:21:45.948781",
+    "startedAt": "2022-12-20T17:21:45.216960",
+    "docker": null,
+    "cuda": null,
+    "args": [],
+    "state": "running",
+    "program": "/zhome/2f/1/160237/Thesis/Code/pytorch-neat-master/pole_run.py",
+    "codePath": "Code/pytorch-neat-master/pole_run.py",
+    "git": {
+        "remote": "https://github.com/AbhistaPB/Thesis.git",
+        "commit": "c615d839e6e1239952b7b263e54d0af83a723e9d"
+    },
+    "email": "s210246@student.dtu.dk",
+    "root": "/zhome/2f/1/160237/Thesis",
+    "host": "n-62-20-9",
+    "username": "s210246",
+    "executable": "/zhome/2f/1/160237/miniconda3/bin/python3",
+    "cpu_count": 32,
+    "cpu_count_logical": 32,
+    "cpu_freq": {
+        "current": 2243.2661249999996,
+        "min": 1000.0,
+        "max": 3700.0
+    },
+    "cpu_freq_per_core": [
+        {
+            "current": 3329.187,
+            "min": 1000.0,
+            "max": 3700.0
+        },
+        {
+            "current": 1014.672,
+            "min": 1000.0,
+            "max": 3700.0
+        },
+        {
+            "current": 1545.812,
+            "min": 1000.0,
+            "max": 3700.0
+        },
+        {
+            "current": 999.914,
+            "min": 1000.0,
+            "max": 3700.0
+        },
+        {
+            "current": 1151.623,
+            "min": 1000.0,
+            "max": 3700.0
+        },
+        {
+            "current": 1009.594,
+            "min": 1000.0,
+            "max": 3700.0
+        },
+        {
+            "current": 3066.87,
+            "min": 1000.0,
+            "max": 3700.0
+        },
+        {
+            "current": 1345.861,
+            "min": 1000.0,
+            "max": 3700.0
+        },
+        {
+            "current": 2993.237,
+            "min": 1000.0,
+            "max": 3700.0
+        },
+        {
+            "current": 2373.388,
+            "min": 1000.0,
+            "max": 3700.0
+        },
+        {
+            "current": 3070.837,
+            "min": 1000.0,
+            "max": 3700.0
+        },
+        {
+            "current": 2384.02,
+            "min": 1000.0,
+            "max": 3700.0
+        },
+        {
+            "current": 1003.405,
+            "min": 1000.0,
+            "max": 3700.0
+        },
+        {
+            "current": 2954.04,
+            "min": 1000.0,
+            "max": 3700.0
+        },
+        {
+            "current": 1310.949,
+            "min": 1000.0,
+            "max": 3700.0
+        },
+        {
+            "current": 999.914,
+            "min": 1000.0,
+            "max": 3700.0
+        },
+        {
+            "current": 1786.706,
+            "min": 1000.0,
+            "max": 3700.0
+        },
+        {
+            "current": 2107.263,
+            "min": 1000.0,
+            "max": 3700.0
+        },
+        {
+            "current": 1278.894,
+            "min": 1000.0,
+            "max": 3700.0
+        },
+        {
+            "current": 3111.462,
+            "min": 1000.0,
+            "max": 3700.0
+        },
+        {
+            "current": 3368.066,
+            "min": 1000.0,
+            "max": 3700.0
+        },
+        {
+            "current": 2207.556,
+            "min": 1000.0,
+            "max": 3700.0
+        },
+        {
+            "current": 3049.096,
+            "min": 1000.0,
+            "max": 3700.0
+        },
+        {
+            "current": 3102.575,
+            "min": 1000.0,
+            "max": 3700.0
+        },
+        {
+            "current": 3348.388,
+            "min": 1000.0,
+            "max": 3700.0
+        },
+        {
+            "current": 3058.3,
+            "min": 1000.0,
+            "max": 3700.0
+        },
+        {
+            "current": 3183.19,
+            "min": 1000.0,
+            "max": 3700.0
+        },
+        {
+            "current": 2805.505,
+            "min": 1000.0,
+            "max": 3700.0
+        },
+        {
+            "current": 3360.29,
+            "min": 1000.0,
+            "max": 3700.0
+        },
+        {
+            "current": 1113.061,
+            "min": 1000.0,
+            "max": 3700.0
+        },
+        {
+            "current": 1074.023,
+            "min": 1000.0,
+            "max": 3700.0
+        },
+        {
+            "current": 2865.332,
+            "min": 1000.0,
+            "max": 3700.0
+        }
+    ],
+    "disk": {
+        "total": 71.9676399230957,
+        "used": 4.7999420166015625
+    },
+    "gpu": "Tesla V100-SXM2-32GB",
+    "gpu_count": 4,
+    "gpu_devices": [
+        {
+            "name": "Tesla V100-SXM2-32GB",
+            "memory_total": 34359738368
+        },
+        {
+            "name": "Tesla V100-SXM2-32GB",
+            "memory_total": 34359738368
+        },
+        {
+            "name": "Tesla V100-SXM2-32GB",
+            "memory_total": 34359738368
+        },
+        {
+            "name": "Tesla V100-SXM2-32GB",
+            "memory_total": 34359738368
+        }
+    ],
+    "memory": {
+        "total": 377.3947525024414
+    }
+}

@@ -2,10 +2,12 @@ import logging
 
 import gym
 import torch
-from render_browser import render_browser
+import numpy as np
+# from render_browser import render_browser
 
 import neat.population as pop
 import neat.experiments.pole_balancing.config as c
+from neat.experiments.pole_balancing.Conv2explain import Converter
 from neat.visualize import draw_net
 from neat.phenotype.feed_forward import FeedForwardNet
 import pickle
@@ -30,7 +32,7 @@ else:
     with open(solution_fitness_path, 'wb') as f:
         pickle.dump(neat.best_fitness, f)
 
-@render_browser
+# @render_browser
 def Best_run(solution, logger):
     if solution is not None:
         logger.info('Found a Solution')
@@ -42,11 +44,20 @@ def Best_run(solution, logger):
         observation = env.reset()
 
         fitness = 0
+        conv2 = Converter()
         phenotype = FeedForwardNet(solution, c.PoleBalanceConfig)
 
         while not done:
-            # yield env.render(mode='rgb_array')
-            input = torch.Tensor([observation]).to(c.PoleBalanceConfig.DEVICE)
+            env.render()
+            observation = np.array([observation])
+            if c.PoleBalanceConfig.version == 'V0':
+                observation = conv2.obsV0(observation)
+            elif c.PoleBalanceConfig.version == 'V1':
+                observation = conv2.obsV1(observation)
+            elif c.PoleBalanceConfig.version == 'V2':
+                observation = conv2.obsV2(observation)
+
+            input = torch.Tensor(observation).to(c.PoleBalanceConfig.DEVICE)
 
             pred = round(float(phenotype(input)))
             observation, reward, done, info = env.step(pred)
@@ -55,4 +66,4 @@ def Best_run(solution, logger):
         env.close()
     return None
 
-# Best_run(solution, logger)
+Best_run(solution, logger)

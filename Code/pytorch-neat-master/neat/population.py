@@ -156,7 +156,8 @@ class Population:
     
                 wandb.log(wandb_dict)
 
-            if best_genome.fitness >= self.Config.FITNESS_THRESHOLD:
+            if (best_genome.fitness >= self.Config.FITNESS_THRESHOLD) \
+                    or ((generation+1) == self.Config.NUMBER_OF_GENERATIONS):
                 self.best_fitness.append(best_genome.fitness)
                 return best_genome, generation
 

@@ -3,6 +3,7 @@ import gym
 import numpy as np
 import pickle
 from os import path
+from neat.experiments.pole_balancing.Conv2explain import Converter
 
 from neat.phenotype.feed_forward import FeedForwardNet
 
@@ -11,7 +12,7 @@ class PoleBalanceConfig:
     DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     VERBOSE = True
 
-    log_wandb = True
+    log_wandb = False
     version = 'V2'
     name = 'Pure NEAT'
     solution_path = './images/pole-balancing-solution.pkl'
@@ -35,7 +36,7 @@ class PoleBalanceConfig:
     SCALE_ACTIVATION = 4.9
 
     POPULATION_SIZE = 150
-    NUMBER_OF_GENERATIONS = 20
+    NUMBER_OF_GENERATIONS = 10
     SPECIATION_THRESHOLD = 3.0
 
     CONNECTION_MUTATION_RATE = 0.80
@@ -61,6 +62,7 @@ class PoleBalanceConfig:
         done = False
         observation = env.reset()
 
+        conv2 = Converter()
         fitness = 0
         phenotype = FeedForwardNet(genome, self)
         if path.exists(self.solution_path):
@@ -74,33 +76,11 @@ class PoleBalanceConfig:
             observation = np.array([observation])
             if path.exists(self.solution_path):
                 if self.version == 'V1':
-                    pos_left = 1.0 if observation[0][0] < - 0.8 else 0.0
-                    pos_mid = 1.0 if ((observation[0][0] >= -0.8) and (observation[0][0] <= 0.8)) else 0.0
-                    pos_right = 1.0 if observation[0][0] > 0.8 else 0.0
-                    vel_high = 1.0 if ((observation[0][1] > 5) or (observation[0][1] < -5)) else 0.0
-                    vel_low = 1.0 if ((observation[0][1] <= 5) and (observation[0][1] >= -5)) else 0.0
-                    pole_left = 1.0 if observation[0][2] < -0.07 else 0.0
-                    pole_mid = 1.0 if ((observation[0][2] >= -0.07) and (observation[0][2] <=0.07)) else 0.0
-                    pole_right = 1.0 if observation[0][2] > 0.07 else 0.0
-                    avel_high = 1.0 if ((observation[0][3] < -5) or (observation[0][3] > 5)) else 0.0
-                    avel_low = 1.0 if ((observation[0][3] >= -5) and (observation[0][3] <= 5)) else 0.0
-                    new_observation = np.array([np.array([pos_left, pos_mid, pos_right, vel_high, vel_low,\
-                                                pole_left, pole_mid, pole_right, avel_high, avel_low])])
+                    new_observation = conv2.obsV1(observation)
                 elif self.version == 'V2':
-                    pos_left = observation[0][0] if observation[0][0] < - 0.8 else 0.0
-                    pos_mid = observation[0][0] if ((observation[0][0] >= -0.8) and (observation[0][0] <= 0.8)) else 0.0
-                    pos_right = observation[0][0] if observation[0][0] > 0.8 else 0.0
-                    vel_high = observation[0][1] if ((observation[0][1] > 5) or (observation[0][1] < -5)) else 0.0
-                    vel_low = observation[0][1] if ((observation[0][1] <= 5) and (observation[0][1] >= -5)) else 0.0
-                    pole_left = observation[0][2] if observation[0][2] < -0.07 else 0.0
-                    pole_mid = observation[0][2] if ((observation[0][2] >= -0.07) and (observation[0][2] <=0.07)) else 0.0
-                    pole_right = observation[0][2] if observation[0][2] > 0.07 else 0.0
-                    avel_high = observation[0][3] if ((observation[0][3] < -5) or (observation[0][3] > 5)) else 0.0
-                    avel_low = observation[0][3] if ((observation[0][3] >= -5) and (observation[0][3] <= 5)) else 0.0
-                    new_observation = np.array([np.array([pos_left, pos_mid, pos_right, vel_high, vel_low,\
-                                                pole_left, pole_mid, pole_right, avel_high, avel_low])])
+                    new_observation = conv2.obsV2(observation)
             else:
-                new_observation = observation
+                new_observation = conv2.obsV0(observation)
             
 
             input_new = torch.Tensor(new_observation).to(self.DEVICE)
@@ -117,23 +97,13 @@ class PoleBalanceConfig:
 
             fitness += reward + reward_extra
             if self.version != 'V0':
-                explained = ''
-                explained += ' and pos_left' if pos_left != 0 else ''
-                explained += ' and pos_mid' if pos_mid != 0 else ''
-                explained += ' and pos_right' if pos_right != 0 else ''
-                explained += ' and vel_high' if vel_high != 0 else ''
-                explained += ' and vel_low' if vel_low != 0 else ''
-                explained += ' and pole_left' if pole_left != 0 else ''
-                explained += ' and pole_mid' if pole_mid != 0 else ''
-                explained += ' and pole_right' if pole_right != 0 else ''
-                explained += ' and avel_high' if avel_high != 0 else ''
-                explained += ' and avel_low' if pole_left != 0 else ''
+                explained = conv2.explain()
                 if sol_pred == 1.0:
                     explanation_right.append(explained[5:])
                 elif sol_pred == 0.0:
                     explanation_left.append(explained[5:])
-
+            else:
+                explanation_left, explanation_right = [None], [None]
 
         env.close()
-
         return fitness, explanation_right

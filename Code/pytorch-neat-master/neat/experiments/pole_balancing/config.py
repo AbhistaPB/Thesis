@@ -99,11 +99,12 @@ class PoleBalanceConfig:
             if self.version != 'V0':
                 explained = conv2.explain()
                 if sol_pred == 1.0:
-                    explanation_right.append(explained[5:])
+                    explanation_right.append(explained)
                 elif sol_pred == 0.0:
-                    explanation_left.append(explained[5:])
+                    explanation_left.append(explained)
             else:
                 explanation_left, explanation_right = [None], [None]
+                
 
         env.close()
         return fitness, explanation_right

@@ -46,7 +46,8 @@ def Best_run(solution, logger):
         fitness = 0
         conv2 = Converter()
         phenotype = FeedForwardNet(solution, c.PoleBalanceConfig)
-
+        explanation = []
+        
         while not done:
             env.render()
             observation = np.array([observation])
@@ -63,6 +64,17 @@ def Best_run(solution, logger):
             observation, reward, done, info = env.step(pred)
 
             fitness += reward
+
+            if c.PoleBalanceConfig.version != 'V0':
+                explained = conv2.explain()
+                explanation.append(explained)
+            else:
+                explanation = [None]
+            
+            pred_human = 'left' if pred == 0 else 'right'
+
+            logger.info('I can see ' + explained + '. Hence, I go ' + pred_human)
+
         env.close()
     return None
 

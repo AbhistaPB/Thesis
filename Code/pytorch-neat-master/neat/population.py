@@ -126,8 +126,6 @@ class Population:
             for genome in self.population:
                 self.speciate(genome, generation)
 
-            #
-
             # Generation Stats
             self.best_fitness.append(best_genome.fitness)
             if self.Config.VERBOSE:

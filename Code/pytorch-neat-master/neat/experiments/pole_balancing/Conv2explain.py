@@ -49,4 +49,4 @@ class Converter:
         explained += ' and pole_right' if self.pole_right != 0 else ''
         explained += ' and avel_high' if self.avel_high != 0 else ''
         explained += ' and avel_low' if self.pole_left != 0 else ''
-        return explained
+        return explained[5:]

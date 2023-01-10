@@ -23,6 +23,7 @@ class Population:
         self.population = self.set_initial_population()
         self.species = []
         self.best_fitness = []
+        self.overall_best_genome = None
 
         for genome in self.population:
             self.speciate(genome, 0)
@@ -154,12 +155,17 @@ class Population:
     
                 wandb.log(wandb_dict)
 
-            if (best_genome.fitness >= self.Config.FITNESS_THRESHOLD) \
-                    or ((generation+1) == self.Config.NUMBER_OF_GENERATIONS):
+            if (best_genome.fitness >= self.Config.FITNESS_THRESHOLD):
                 self.best_fitness.append(best_genome.fitness)
                 return best_genome, generation
 
-        return None, None
+            if self.overall_best_genome == None:
+                self.overall_best_genome = best_genome
+
+            if (best_genome.fitness >= self.overall_best_genome.fitness):
+                self.overall_best_genome = best_genome
+
+        return self.overall_best_genome, generation
 
     def speciate(self, genome, generation):
         """

@@ -1,15 +1,20 @@
 import numpy as np
+import math
 
 class Converter:
-    def __init__(self, mem_func_type = 'Triangular') -> None:
-        if mem_func_type.lower() == 'triangular':
+    def __init__(self) -> None:
             # Hard coded for the cartpole problem
-            self.b = [[0, 1.6, -1.6], [0, 2.5, -2.5], [0, 0.10475, -0.10475], [0, 2.5, -2.5]]
-            self.a = [[-1.6, 0, -2.4], [-2.5, 0, -5], [-0.10475, 0, 0.2095], [-2.5, 0, -5]]
-            self.c = [[1.6, 2.4, 0], [2.5, 5, 0], [0.10475, 0.2095, 0], [2.5, 5, 0]]
+            # Triangular membership function
+            self.b = [[-1.6, 0, 1.6], [-2.5, 0, 2.5], [-0.10475, 0, 0.10475], [-2.5, 0, 2.5]]
+            self.a = [[-2.4, -1.6, 0], [-5, -2.5, 0], [0.2095, -0.10475, 0], [-5, -2.5, 0]]
+            self.c = [[0, 1.6, 2.4], [0, 2.5, 5], [0, 0.10475, 0.2095], [0, 2.5, 5]]
 
+            # Gaussian membership function
+            self.mean = [[-1.6, 0, 1.6], [-2.5, 0, 2.5], [-0.10475, 0, 0.10475], [-2.5, 0, 2.5]]
+            self.sigma = [[1, 1, 1], [1.5, 1.5, 1.5], [0.15, 0.15, 0.15], [1.5, 1.5, 1.5]]
+            self.fuzzy_obs = []
 
-    def obsconv(self, observation, version):
+    def obsconv(self, observation, version, mem_func = 'Triangular'):
         if version == 'V0':
             observation = self.obsV0(observation)
         elif version == 'V1':
@@ -17,7 +22,7 @@ class Converter:
         elif version == 'V2':
             observation = self.obsV2(observation)
         elif version == 'V3':
-            observation = self.obsV3(observation)
+            observation = self.obsV3(observation, mem_func)
         return observation
 
     def obsV0(self, observation):
@@ -53,20 +58,33 @@ class Converter:
             self.vel_low, self.pole_left, self.pole_mid, self.pole_right, self.avel_high, self.avel_low])])
         return new_observation
     
-    def obsV3(self, observation):
-        fuzzy_obs = []
+    def obsV3(self, observation, mem_type):
+        self.fuzzy_obs = []
+        # fuzzy_obs = []
         [observation] = observation
-        for i, x in enumerate(observation):
-            for ind in range(3):
-                fuzzy_obs.append(self.triangular(x, self.a[i][ind], self.b[i][ind], self.c[i][ind]))
-        return [fuzzy_obs]
+        if mem_type.lower() == 'triangular':
+            for i, x in enumerate(observation):
+                for ind in range(3):
+                    self.fuzzy_obs.append(self.triangular(x, self.a[i][ind], self.b[i][ind], self.c[i][ind]))
+
+        elif mem_type.lower() == 'gaussian':
+            for i, x in enumerate(observation):
+                for ind in range(3):
+                    self.fuzzy_obs.append(self.gaussian(x, self.mean[i][ind], self.sigma[i][ind]))
+        
+        # self.fuzzy_obs = fuzzy_obs
+        return [self.fuzzy_obs]
     
     def triangular(self, x, a, b, c):
         y = max(min(((x-a)/(b-a)), ((c-x)/(c-b))), 0)
         return y
+
+    def gaussian(self, x, mean, sigma):
+        y = math.exp(-(0.5)*(((x - mean)/sigma)**2))
+        return y
     def explain(self, version):
-        if (version == 'V1') or (version == 'V2'): 
-            explained = ''
+        explained = ''
+        if (version == 'V1') or (version == 'V2'):
             explained += ' and pos_left' if self.pos_left != 0 else ''
             explained += ' and pos_mid' if self.pos_mid != 0 else ''
             explained += ' and pos_right' if self.pos_right != 0 else ''
@@ -79,6 +97,18 @@ class Converter:
             explained += ' and avel_low' if self.pole_left != 0 else ''
             return explained[5:]
         elif version == 'V3':
-            return None
+            explained += ' and left' if self.fuzzy_obs[0] != 0 else ''
+            explained += ' and middle' if self.fuzzy_obs[1] != 0 else ''
+            explained += ' and right' if self.fuzzy_obs[2] != 0 else ''
+            explained += ' and vel_left' if self.fuzzy_obs[3] != 0 else ''
+            explained += ' and vel_low' if self.fuzzy_obs[4] != 0 else ''
+            explained += ' and vel_right' if self.fuzzy_obs[5] != 0 else ''
+            explained += ' and pole_left' if self.fuzzy_obs[6] != 0 else ''
+            explained += ' and pole_middle' if self.fuzzy_obs[7] != 0 else ''
+            explained += ' and pole_right' if self.fuzzy_obs[8] != 0 else ''
+            explained += ' and ang_vel_left' if self.fuzzy_obs[9] != 0 else ''
+            explained += ' and ang_vel_low' if self.fuzzy_obs[10] != 0 else ''
+            explained += ' and ang_vel_right' if self.fuzzy_obs[11] != 0 else ''
+            return explained[5:]
         else:
             return None

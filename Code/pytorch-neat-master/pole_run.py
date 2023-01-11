@@ -68,10 +68,7 @@ def Best_run(solution, logger):
             
             pred_human = 'left' if pred == 0 else 'right'
 
-            if c.PoleBalanceConfig.version != 'V3':
-                logger.info('I can see ' + explained + '. Hence, I go ' + pred_human)
-            else:
-                logger.info(solution.fitness)
+            logger.info('I can see ' + explained + '. Hence, I go ' + pred_human)
 
         env.close()
     return None

@@ -29,7 +29,7 @@ class PoleBalanceConfig:
             NUM_INPUTS = 10
         elif version == 'V3':
             NUM_INPUTS = 12
-            MEM_FUNC = 'Triangular'
+            MEM_FUNC = 'Gaussian' # change membership function here
         else:
             NUM_INPUTS = 4
 

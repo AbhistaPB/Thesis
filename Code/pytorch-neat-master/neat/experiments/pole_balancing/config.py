@@ -13,7 +13,7 @@ class PoleBalanceConfig:
     VERBOSE = True
 
     log_wandb = False
-    version = 'V2'
+    version = 'V3'
     name = 'Pure NEAT'
     solution_path = './images/pole-balancing-solution.pkl'
     Environment = 'CartPole-v1'
@@ -27,8 +27,12 @@ class PoleBalanceConfig:
             NUM_INPUTS = 10
         elif version == 'V2':
             NUM_INPUTS = 10
+        elif version == 'V3':
+            NUM_INPUTS = 12
+            MEM_FUNC = 'Triangular'
         else:
             NUM_INPUTS = 4
+
     NUM_OUTPUTS = 1
     USE_BIAS = True
 
@@ -74,18 +78,12 @@ class PoleBalanceConfig:
 
         while not done:
             observation = np.array([observation])
-            if path.exists(self.solution_path):
-                if self.version == 'V1':
-                    new_observation = conv2.obsV1(observation)
-                elif self.version == 'V2':
-                    new_observation = conv2.obsV2(observation)
-            else:
-                new_observation = conv2.obsV0(observation)
+            new_observation = conv2.obsconv(observation, self.version)
             
 
             input_new = torch.Tensor(new_observation).to(self.DEVICE)
             input = torch.Tensor(observation).to(self.DEVICE)
-            
+
             pred = round(float(phenotype(input_new)))
             if path.exists(self.solution_path):
                 sol_pred = round(float(solution_phenotype(input)))
@@ -97,7 +95,7 @@ class PoleBalanceConfig:
 
             fitness += reward + reward_extra
             if self.version != 'V0':
-                explained = conv2.explain()
+                explained = conv2.explain(self.version)
                 if sol_pred == 1.0:
                     explanation_right.append(explained)
                 elif sol_pred == 0.0:

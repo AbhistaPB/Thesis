@@ -41,7 +41,7 @@ def draw_net(genome, view=False, filename=None, node_names=None, show_disabled=F
             a = node_names.get(input, str(input))
             b = node_names.get(output, str(output))
 
-            style = 'solid' if connect_gene.is_enabled else 'dashed'
+            style = 'solid' if connect_gene.is_enabled else 'dotted'
             color = 'green' if float(connect_gene.weight) > 0 else 'red'
             width = str(0.1 + abs(float(connect_gene.weight / 5.0)))
             dot.edge(a, b, _attributes={'style': style, 'color': color, 'penwidth': width})

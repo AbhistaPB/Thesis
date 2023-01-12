@@ -50,12 +50,14 @@ def Best_run(solution, logger):
         
         while not done:
             env.render()
+            
             observation = np.array([observation])
             observation = conv2.obsconv(observation, c.PoleBalanceConfig.version)
 
             input = torch.Tensor(observation).to(c.PoleBalanceConfig.DEVICE)
 
-            pred = round(float(phenotype(input)))
+            out = max(*phenotype(input)) if c.PoleBalanceConfig.version != 'V3' else phenotype(input)
+            pred = round(float(out))
             observation, reward, done, info = env.step(pred)
 
             fitness += reward
@@ -69,6 +71,7 @@ def Best_run(solution, logger):
             pred_human = 'left' if pred == 0 else 'right'
 
             logger.info('I can see ' + explained + '. Hence, I go ' + pred_human)
+            logger.info('Accuracy: ' + str((solution.fitness - 500)*2/10) + ' with Fitness ' + str(solution.fitness) + '\n\n')
 
         env.close()
     return None

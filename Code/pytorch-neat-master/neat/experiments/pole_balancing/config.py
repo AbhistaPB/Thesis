@@ -33,14 +33,14 @@ class PoleBalanceConfig:
         else:
             NUM_INPUTS = 4
 
-    NUM_OUTPUTS = 1
+    NUM_OUTPUTS = 2 if version != 'V3' else 1 
     USE_BIAS = True
 
     ACTIVATION = 'sigmoid'
     SCALE_ACTIVATION = 4.9
 
     POPULATION_SIZE = 150
-    NUMBER_OF_GENERATIONS = 10
+    NUMBER_OF_GENERATIONS = 30
     SPECIATION_THRESHOLD = 3.0
 
     CONNECTION_MUTATION_RATE = 0.80
@@ -83,8 +83,9 @@ class PoleBalanceConfig:
 
             input_new = torch.Tensor(new_observation).to(self.DEVICE)
             input = torch.Tensor(observation).to(self.DEVICE)
-
-            pred = round(float(phenotype(input_new)))
+            
+            out = max(*phenotype(input_new)) if self.version != 'V3' else phenotype(input_new)
+            pred = round(float(out))
             if path.exists(self.solution_path):
                 sol_pred = round(float(solution_phenotype(input)))
                 reward_extra = sol_pred*pred + (1-sol_pred)*(1-pred)

@@ -97,18 +97,18 @@ class Converter:
             explained += ' and avel_low' if self.pole_left != 0 else ''
             return explained[5:]
         elif version == 'V3':
-            explained += ' and left' if self.fuzzy_obs[0] != 0 else ''
-            explained += ' and middle' if self.fuzzy_obs[1] != 0 else ''
-            explained += ' and right' if self.fuzzy_obs[2] != 0 else ''
-            explained += ' and vel_left' if self.fuzzy_obs[3] != 0 else ''
-            explained += ' and vel_low' if self.fuzzy_obs[4] != 0 else ''
-            explained += ' and vel_right' if self.fuzzy_obs[5] != 0 else ''
-            explained += ' and pole_left' if self.fuzzy_obs[6] != 0 else ''
-            explained += ' and pole_middle' if self.fuzzy_obs[7] != 0 else ''
-            explained += ' and pole_right' if self.fuzzy_obs[8] != 0 else ''
-            explained += ' and ang_vel_left' if self.fuzzy_obs[9] != 0 else ''
-            explained += ' and ang_vel_low' if self.fuzzy_obs[10] != 0 else ''
-            explained += ' and ang_vel_right' if self.fuzzy_obs[11] != 0 else ''
+            explained += ' and left' if self.fuzzy_obs[0] >= 0.2 else ''
+            explained += ' and middle' if self.fuzzy_obs[1] >= 0.2 else ''
+            explained += ' and right' if self.fuzzy_obs[2] >= 0.2 else ''
+            explained += ' and vel_left' if self.fuzzy_obs[3] >= 0.2 else ''
+            explained += ' and vel_low' if self.fuzzy_obs[4] >= 0.2 else ''
+            explained += ' and vel_right' if self.fuzzy_obs[5] >= 0.2 else ''
+            explained += ' and pole_left' if self.fuzzy_obs[6] >= 0.2 else ''
+            explained += ' and pole_middle' if self.fuzzy_obs[7] >= 0.2 else ''
+            explained += ' and pole_right' if self.fuzzy_obs[8] >= 0.2 else ''
+            explained += ' and ang_vel_left' if self.fuzzy_obs[9] >= 0.2 else ''
+            explained += ' and ang_vel_low' if self.fuzzy_obs[10] >= 0.2 else ''
+            explained += ' and ang_vel_right' if self.fuzzy_obs[11] >= 0.2 else ''
             return explained[5:]
         else:
             return None

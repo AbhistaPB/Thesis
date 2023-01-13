@@ -3,6 +3,7 @@ import gym
 import numpy as np
 import pickle
 from os import path
+from neat.experiments.pole_balancing.Fuzzy_system import Fuzzifier
 from neat.experiments.pole_balancing.Conv2explain import Converter
 
 from neat.phenotype.feed_forward import FeedForwardNet
@@ -14,6 +15,7 @@ class PoleBalanceConfig:
 
     log_wandb = False
     version = 'V3'
+    help_fuzzy = False
     name = 'Pure NEAT'
     solution_path = './images/pole-balancing-solution.pkl'
     Environment = 'CartPole-v1'
@@ -29,7 +31,8 @@ class PoleBalanceConfig:
             NUM_INPUTS = 10
         elif version == 'V3':
             NUM_INPUTS = 12
-            MEM_FUNC = 'Gaussian' # change membership function here
+            MEM_FUNC = 'triangular' # change membership function here
+            FITNESS_THRESHOLD = 1000.0 if help_fuzzy else 500.0
         else:
             NUM_INPUTS = 4
 
@@ -40,7 +43,7 @@ class PoleBalanceConfig:
     SCALE_ACTIVATION = 4.9
 
     POPULATION_SIZE = 150
-    NUMBER_OF_GENERATIONS = 30
+    NUMBER_OF_GENERATIONS = 10
     SPECIATION_THRESHOLD = 3.0
 
     CONNECTION_MUTATION_RATE = 0.80
@@ -67,6 +70,7 @@ class PoleBalanceConfig:
         observation = env.reset()
 
         conv2 = Converter()
+        fuzzifier = Fuzzifier()
         fitness = 0
         phenotype = FeedForwardNet(genome, self)
         if path.exists(self.solution_path):
@@ -79,12 +83,16 @@ class PoleBalanceConfig:
         while not done:
             observation = np.array([observation])
             new_observation = conv2.obsconv(observation, self.version)
-            
+            fuzzifier.track_observations(*new_observation)
 
             input_new = torch.Tensor(new_observation).to(self.DEVICE)
             input = torch.Tensor(observation).to(self.DEVICE)
             
-            out = max(*phenotype(input_new)) if self.version != 'V3' else phenotype(input_new)
+            if self.version != 'V3':
+                out = torch.argmax(*phenotype(input_new)) 
+            else:
+                out = phenotype(input_new)
+
             pred = round(float(out))
             if path.exists(self.solution_path):
                 sol_pred = round(float(solution_phenotype(input)))
@@ -92,9 +100,10 @@ class PoleBalanceConfig:
             else:
                 reward_extra = 0
 
+            fuzzifier.track_predictions(pred)
             observation, reward, done, info = env.step(pred)
 
-            fitness += reward + reward_extra
+            fitness += (reward + reward_extra) if self.version != 'V3' else reward_extra
             if self.version != 'V0':
                 explained = conv2.explain(self.version)
                 if sol_pred == 1.0:
@@ -104,6 +113,8 @@ class PoleBalanceConfig:
             else:
                 explanation_left, explanation_right = [None], [None]
                 
-
+        fuzzifier.decide(explanation_right, explanation_left)
+        fuzzy_reward = fuzzifier.calculate_accuracy()
+        fitness += fuzzy_reward if self.version == 'V3' and self.help_fuzzy else 0
         env.close()
         return fitness, explanation_right

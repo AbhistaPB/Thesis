@@ -1,5 +1,5 @@
 import logging
-
+from neat.experiments.pole_balancing.Fuzzy_system import Fuzzifier
 import gym
 import torch
 import numpy as np
@@ -45,8 +45,10 @@ def Best_run(solution, logger):
 
         fitness = 0
         conv2 = Converter()
+        fuzzifier = Fuzzifier()
         phenotype = FeedForwardNet(solution, c.PoleBalanceConfig)
-        explanation = []
+        explanation_right = []
+        explanation_left = []
         
         while not done:
             env.render()
@@ -54,26 +56,44 @@ def Best_run(solution, logger):
             observation = np.array([observation])
             observation = conv2.obsconv(observation, c.PoleBalanceConfig.version)
 
+            fuzzifier.track_observations(*observation)
+
             input = torch.Tensor(observation).to(c.PoleBalanceConfig.DEVICE)
 
-            out = max(*phenotype(input)) if c.PoleBalanceConfig.version != 'V3' else phenotype(input)
+            if c.PoleBalanceConfig.version != 'V3':
+                out = torch.argmax(*phenotype(input))
+            else:
+                out = phenotype(input)
+
             pred = round(float(out))
+            fuzzifier.track_predictions(pred)
+            
             observation, reward, done, info = env.step(pred)
 
             fitness += reward
 
             if c.PoleBalanceConfig.version != 'V0':
                 explained = conv2.explain(c.PoleBalanceConfig.version)
-                explanation.append(explained)
+                if pred == 0:
+                    explanation_left.append(explained)
+                    pred_human = 'left'
+                else:
+                    explanation_right.append(explained)
+                    pred_human = 'right'
+                
+                
+                logger.info('I can see ' + explained + '. Hence, I go ' + pred_human)
             else:
-                explanation = [None]
-            
-            pred_human = 'left' if pred == 0 else 'right'
-
-            logger.info('I can see ' + explained + '. Hence, I go ' + pred_human)
-            logger.info('Accuracy: ' + str((solution.fitness - 500)*2/10) + ' with Fitness ' + str(solution.fitness) + '\n\n')
+                explanation_right, explanation_left = [None], [None]
 
         env.close()
+        logger.info('Train_accuracy: ' + str((solution.fitness - 500)*2/10) + ' with train_fitness ' + str(solution.fitness))
+        logger.info('Test_fitness ' + str(fitness))
+        fuzzy_output = fuzzifier.decide(explanation_right, explanation_left)
+        logger.info(fuzzy_output)
+        logger.info(fuzzifier.network_predictions)
+        correct_fuzzy_predictions = fuzzifier.calculate_accuracy()
+        logger.info('Fuzzy system: ' + str(correct_fuzzy_predictions) + ', Explanation length:' + str(len(solution.explanation)))
     return None
 
 Best_run(solution, logger)

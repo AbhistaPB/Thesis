@@ -5,13 +5,13 @@ class Converter:
     def __init__(self) -> None:
             # Hard coded for the cartpole problem
             # Triangular membership function
-            self.b = [[-1.6, 0, 1.6], [-2.5, 0, 2.5], [-0.10475, 0, 0.10475], [-2.5, 0, 2.5]]
             self.a = [[-2.4, -1.6, 0], [-5, -2.5, 0], [0.2095, -0.10475, 0], [-5, -2.5, 0]]
+            self.b = [[-1.6, 0, 1.6], [-2.5, 0, 2.5], [-0.10475, 0, 0.10475], [-2.5, 0, 2.5]]
             self.c = [[0, 1.6, 2.4], [0, 2.5, 5], [0, 0.10475, 0.2095], [0, 2.5, 5]]
 
             # Gaussian membership function
-            self.mean = [[-1.6, 0, 1.6], [-2.5, 0, 2.5], [-0.10475, 0, 0.10475], [-2.5, 0, 2.5]]
-            self.sigma = [[1, 1, 1], [1.5, 1.5, 1.5], [0.15, 0.15, 0.15], [1.5, 1.5, 1.5]]
+            self.mean = [[-0.8, 0, 0.8], [-1.5, 0, 1.5], [-0.052375, 0, 0.052375], [-1.5, 0, 1.5]]
+            self.sigma = [[0.5, 0.5, 0.5], [0.75, 0.75, 0.75], [0.075, 0.075, 0.075], [0.75, 0.75, 0.75]]
             self.fuzzy_obs = []
 
     def obsconv(self, observation, version, mem_func = 'Triangular'):
@@ -97,18 +97,18 @@ class Converter:
             explained += ' and avel_low' if self.pole_left != 0 else ''
             return explained[5:]
         elif version == 'V3':
-            explained += ' and left' if self.fuzzy_obs[0] >= 0.2 else ''
-            explained += ' and middle' if self.fuzzy_obs[1] >= 0.2 else ''
-            explained += ' and right' if self.fuzzy_obs[2] >= 0.2 else ''
-            explained += ' and vel_left' if self.fuzzy_obs[3] >= 0.2 else ''
-            explained += ' and vel_low' if self.fuzzy_obs[4] >= 0.2 else ''
-            explained += ' and vel_right' if self.fuzzy_obs[5] >= 0.2 else ''
-            explained += ' and pole_left' if self.fuzzy_obs[6] >= 0.2 else ''
-            explained += ' and pole_middle' if self.fuzzy_obs[7] >= 0.2 else ''
-            explained += ' and pole_right' if self.fuzzy_obs[8] >= 0.2 else ''
-            explained += ' and ang_vel_left' if self.fuzzy_obs[9] >= 0.2 else ''
-            explained += ' and ang_vel_low' if self.fuzzy_obs[10] >= 0.2 else ''
-            explained += ' and ang_vel_right' if self.fuzzy_obs[11] >= 0.2 else ''
-            return explained[5:]
+            explained += ' and left' if self.fuzzy_obs[0] != 0 else ''
+            explained += ' and middle' if self.fuzzy_obs[1] != 0 else ''
+            explained += ' and right' if self.fuzzy_obs[2] != 0 else ''
+            explained += ' and vel_left' if self.fuzzy_obs[3] != 0 else ''
+            explained += ' and vel_low' if self.fuzzy_obs[4] != 0 else ''
+            explained += ' and vel_right' if self.fuzzy_obs[5] != 0 else ''
+            explained += ' and pole_left' if self.fuzzy_obs[6] != 0 else ''
+            explained += ' and pole_middle' if self.fuzzy_obs[7] != 0 else ''
+            explained += ' and pole_right' if self.fuzzy_obs[8] != 0 else ''
+            explained += ' and ang_vel_left' if self.fuzzy_obs[9] != 0 else ''
+            explained += ' and ang_vel_low' if self.fuzzy_obs[10] != 0 else ''
+            explained += ' and ang_vel_right' if self.fuzzy_obs[11] != 0 else ''
+            return explained[4:]
         else:
             return None

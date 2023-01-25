@@ -20,23 +20,14 @@ logger.info(c.PoleBalanceConfig.DEVICE)
 neat = pop.Population(c.PoleBalanceConfig)
 solution, generation = neat.run()
 solution_path = './images/pole-balancing-solution.pkl'
-solution_fitness_path = './images/pole-balancing-fitness.pkl'
-if not path.exists(solution_path):
+if (not path.exists(solution_path)) and (c.PoleBalanceConfig.version == 'V0'):
     with open(solution_path, 'wb') as f:
         pickle.dump(solution, f)
-    with open(solution_fitness_path, 'wb') as f:
-        pickle.dump(neat.best_fitness, f)
-else:
-    with open(solution_path.replace('.pkl', '-explained.pkl'), 'wb') as f:
-        pickle.dump(solution, f)
-    with open(solution_fitness_path, 'wb') as f:
-        pickle.dump(neat.best_fitness, f)
 
-# @render_browser
 def Best_run(solution, logger):
     if solution is not None:
         logger.info('Found a Solution')
-        draw_net(solution, view=True, filename='./images/pole-balancing-solution', show_disabled=True)
+        draw_net(solution, view=True, filename='./images/pole-balancing-solution' + c.PoleBalanceConfig.version, show_disabled=True)
 
         # OpenAI Gym
         env = gym.make('CartPole-v1')
@@ -60,7 +51,7 @@ def Best_run(solution, logger):
 
             input = torch.Tensor(observation).to(c.PoleBalanceConfig.DEVICE)
 
-            if c.PoleBalanceConfig.version != 'V3':
+            if c.PoleBalanceConfig.version == 'V3':
                 out = torch.argmax(*phenotype(input))
             else:
                 out = phenotype(input)
@@ -87,13 +78,19 @@ def Best_run(solution, logger):
                 explanation_right, explanation_left = [None], [None]
 
         env.close()
-        logger.info('Train_accuracy: ' + str((solution.fitness - 500)*2/10) + ' with train_fitness ' + str(solution.fitness))
+        logger.info('Train_accuracy: ' + str((solution.fitness)/10) + ' with train_fitness ' + str(solution.fitness))
         logger.info('Test_fitness ' + str(fitness))
-        fuzzy_output = fuzzifier.decide(explanation_right, explanation_left)
-        logger.info(fuzzy_output)
-        logger.info(fuzzifier.network_predictions)
-        correct_fuzzy_predictions = fuzzifier.calculate_accuracy()
-        logger.info('Fuzzy system: ' + str(correct_fuzzy_predictions) + ', Explanation length:' + str(len(solution.explanation)))
+        if c.PoleBalanceConfig.version == 'V3':
+            fuzzy_output = fuzzifier.decide(explanation_right, explanation_left)
+            logger.info(fuzzy_output)
+            logger.info(fuzzifier.network_predictions)
+            correct_fuzzy_predictions = fuzzifier.calculate_accuracy()
+            logger.info('Fuzzy system: ' + str(correct_fuzzy_predictions) + ', Explanation length:' + str(len(solution.explanation)))
     return None
 
 Best_run(solution, logger)
+
+if c.PoleBalanceConfig.version != 'V0':
+    if input('Save Model?') == 'yes':
+        with open(solution_path.replace('.pkl', c.PoleBalanceConfig.version + '.pkl'), 'wb') as f:
+            pickle.dump(neat, f)

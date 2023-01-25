@@ -34,7 +34,7 @@ class Population:
             wandb.init(
                 project="Logic and NEAT", 
                 entity="abhista", 
-                name=self.Config.name + ' TEST',
+                name=self.Config.name,
                 config={
                     'Name': self.Config.version,
                     'GYM environment': self.Config.Environment,
@@ -133,7 +133,7 @@ class Population:
                 logger.info(f'Finished Generation {generation}')
                 logger.info(f'Best Genome Fitness: {best_genome.fitness}')
                 logger.info(f'Best Genome Species: {best_genome.species}')
-                logger.info(f'Worst fitness of the best genome species: {self.species[best_genome.species].worst_fitness}')
+                # logger.info(f'Worst fitness of the best genome species: {self.species[best_genome.species].worst_fitness}')
                 logger.info(f'Explanation: {best_genome.explanation[-1]}')
                 logger.info(f'Explanation length: {len(best_genome.explanation)}')
                 logger.info(f'Best Genome Length {len(best_genome.connection_genes)}\n')
@@ -142,16 +142,17 @@ class Population:
                 wandb_dict = {
                     'Best-Fitness': max_fitness,
                     'Worst-Fitness': min_fitness,
+                    'Mean-Fitness': (max_fitness + min_fitness)/2,
                     'Genome length': len(best_genome.connection_genes),
                     'Number of Species': len(remaining_species),
                     'Explanation length': len(best_genome.explanation)
                 }
                 
-                for i, species in enumerate(self.species):
-                    if i % 5 == 0:
-                        wandb_dict['Species ' + str(i) + ' Best'] = species.best_fitness
-                        wandb_dict['Species ' + str(i) + ' Worst'] = species.worst_fitness
-                    wandb_dict['Species ' + str(i) + 'Adjusted fitness'] = species.adjusted_fitness
+                # for i, species in enumerate(self.species):
+                #     if i % 5 == 0:
+                #         wandb_dict['Species ' + str(i) + ' Best'] = species.best_fitness
+                #         wandb_dict['Species ' + str(i) + ' Worst'] = species.worst_fitness
+                    # wandb_dict['Species ' + str(i) + 'Adjusted fitness'] = species.adjusted_fitness
     
                 wandb.log(wandb_dict)
 
@@ -165,7 +166,7 @@ class Population:
             if (best_genome.fitness >= self.overall_best_genome.fitness):
                 self.overall_best_genome = best_genome
 
-        return self.overall_best_genome, generation
+        return best_genome, generation
 
     def speciate(self, genome, generation):
         """

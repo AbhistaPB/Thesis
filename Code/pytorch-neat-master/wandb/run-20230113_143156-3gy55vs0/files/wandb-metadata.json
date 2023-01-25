@@ -1,0 +1,42 @@
+{
+    "os": "Windows-10-10.0.22621-SP0",
+    "python": "3.9.1",
+    "heartbeatAt": "2023-01-13T13:31:57.520860",
+    "startedAt": "2023-01-13T13:31:56.990952",
+    "docker": null,
+    "cuda": null,
+    "args": [],
+    "state": "running",
+    "program": "c:\\Users\\AbhistaPartal\\DTU\\Thesis\\Code\\pytorch-neat-master\\pole_run.py",
+    "codePath": "Code\\pytorch-neat-master\\pole_run.py",
+    "git": {
+        "remote": "https://github.com/AbhistaPB/Thesis.git",
+        "commit": "7703dc630fa84afcc7c4db3a26f5ac317d5354ce"
+    },
+    "email": "s210246@student.dtu.dk",
+    "root": "C:/Users/AbhistaPartal/DTU/Thesis",
+    "host": "abhista",
+    "username": "AbhistaPartal",
+    "executable": "C:\\Users\\AbhistaPartal\\.conda\\envs\\Thesis\\python.exe",
+    "cpu_count": 4,
+    "cpu_count_logical": 8,
+    "cpu_freq": {
+        "current": 907.0,
+        "min": 0.0,
+        "max": 2419.0
+    },
+    "cpu_freq_per_core": [
+        {
+            "current": 907.0,
+            "min": 0.0,
+            "max": 2419.0
+        }
+    ],
+    "disk": {
+        "total": 237.74901962280273,
+        "used": 63.63725662231445
+    },
+    "memory": {
+        "total": 15.725639343261719
+    }
+}

@@ -60,7 +60,7 @@ class Converter:
     
     def obsV3(self, observation, mem_type):
         self.fuzzy_obs = []
-        # fuzzy_obs = []
+
         [observation] = observation
         if mem_type.lower() == 'triangular':
             for i, x in enumerate(observation):
@@ -72,7 +72,6 @@ class Converter:
                 for ind in range(3):
                     self.fuzzy_obs.append(self.gaussian(x, self.mean[i][ind], self.sigma[i][ind]))
         
-        # self.fuzzy_obs = fuzzy_obs
         return [self.fuzzy_obs]
     
     def triangular(self, x, a, b, c):
@@ -84,7 +83,9 @@ class Converter:
         return y
     def explain(self, version):
         explained = ''
-        if (version == 'V1') or (version == 'V2'):
+        if version == 'V0':
+            return None
+        elif (version == 'V1') or (version == 'V2'):
             explained += ' and pos_left' if self.pos_left != 0 else ''
             explained += ' and pos_mid' if self.pos_mid != 0 else ''
             explained += ' and pos_right' if self.pos_right != 0 else ''

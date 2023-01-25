@@ -13,15 +13,15 @@ class PoleBalanceConfig:
     DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     VERBOSE = True
 
-    log_wandb = False
+    log_wandb = True
     version = 'V3'
-    help_fuzzy = False
-    name = 'Pure NEAT'
+    name = version + ' NEAT and LEN'
+    help_fuzzy = True
     solution_path = './images/pole-balancing-solution.pkl'
     Environment = 'CartPole-v1'
     
     if not path.exists(solution_path):
-        FITNESS_THRESHOLD = 500.0
+        FITNESS_THRESHOLD = 1000.0
         NUM_INPUTS = 4
     else:
         FITNESS_THRESHOLD = 1000.0
@@ -31,19 +31,19 @@ class PoleBalanceConfig:
             NUM_INPUTS = 10
         elif version == 'V3':
             NUM_INPUTS = 12
-            MEM_FUNC = 'triangular' # change membership function here
-            FITNESS_THRESHOLD = 1000.0 if help_fuzzy else 500.0
+            MEM_FUNC = 'gaussian' # change membership function here
+            FITNESS_THRESHOLD = 1000.0
         else:
             NUM_INPUTS = 4
 
-    NUM_OUTPUTS = 2 if version != 'V3' else 1 
-    USE_BIAS = True
+    NUM_OUTPUTS = 2 if version == 'V3' else 1 
+    USE_BIAS = False
 
     ACTIVATION = 'sigmoid'
     SCALE_ACTIVATION = 4.9
 
-    POPULATION_SIZE = 150
-    NUMBER_OF_GENERATIONS = 10
+    POPULATION_SIZE = 50
+    NUMBER_OF_GENERATIONS = 30
     SPECIATION_THRESHOLD = 3.0
 
     CONNECTION_MUTATION_RATE = 0.80
@@ -88,13 +88,14 @@ class PoleBalanceConfig:
             input_new = torch.Tensor(new_observation).to(self.DEVICE)
             input = torch.Tensor(observation).to(self.DEVICE)
             
-            if self.version != 'V3':
+            if self.version == 'V3':
                 out = torch.argmax(*phenotype(input_new)) 
             else:
                 out = phenotype(input_new)
 
             pred = round(float(out))
-            if path.exists(self.solution_path):
+
+            if self.version != 'V0' and path.exists(self.solution_path): # add try catch for V0 instead
                 sol_pred = round(float(solution_phenotype(input)))
                 reward_extra = sol_pred*pred + (1-sol_pred)*(1-pred)
             else:
@@ -112,9 +113,20 @@ class PoleBalanceConfig:
                     explanation_left.append(explained)
             else:
                 explanation_left, explanation_right = [None], [None]
-                
-        fuzzifier.decide(explanation_right, explanation_left)
-        fuzzy_reward = fuzzifier.calculate_accuracy()
-        fitness += fuzzy_reward if self.version == 'V3' and self.help_fuzzy else 0
+        if self.version == 'V3':      
+            fuzzifier.decide(explanation_right, explanation_left)
+            fuzzy_reward = fuzzifier.calculate_accuracy()
+            if self.help_fuzzy:
+                fitness += fuzzy_reward
+                explain_diff = np.abs(len(explanation_left) - len(explanation_right))
+                if explain_diff < 30:
+                    fitness += 500  
+                else:
+                    fitness += 0
         env.close()
+        # fitness equalizer
+        if self.version == 'V0':
+            fitness = fitness*2
+        elif self.version == 'V3':
+            fitness = (fitness*2)/3
         return fitness, explanation_right

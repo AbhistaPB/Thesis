@@ -1,0 +1,7 @@
+digraph {
+	node [fontsize=9 height=0.2 shape=circle width=0.2]
+	0 -> 4 [color=green penwidth=0.19180667996406556 style=solid]
+	1 -> 4 [color=green penwidth=0.20907864570617676 style=solid]
+	2 -> 4 [color=green penwidth=0.28348941206932066 style=solid]
+	3 -> 4 [color=green penwidth=0.26812773048877714 style=solid]
+}

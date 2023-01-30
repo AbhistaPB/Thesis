@@ -13,7 +13,7 @@ class PoleBalanceConfig:
     DEVICE = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     VERBOSE = True
 
-    log_wandb = True
+    log_wandb = False
     version = 'V3'
     name = version + ' NEAT and LEN'
     help_fuzzy = True
@@ -31,7 +31,7 @@ class PoleBalanceConfig:
             NUM_INPUTS = 10
         elif version == 'V3':
             NUM_INPUTS = 12
-            MEM_FUNC = 'gaussian' # change membership function here
+            MEM_FUNC = 'triangular' # change membership function here
             FITNESS_THRESHOLD = 1000.0
         else:
             NUM_INPUTS = 4
@@ -72,6 +72,7 @@ class PoleBalanceConfig:
         conv2 = Converter()
         fuzzifier = Fuzzifier()
         fitness = 0
+        fit_reward = 0
         phenotype = FeedForwardNet(genome, self)
         if path.exists(self.solution_path):
             with open(self.solution_path, 'rb') as f:
@@ -104,7 +105,8 @@ class PoleBalanceConfig:
             fuzzifier.track_predictions(pred)
             observation, reward, done, info = env.step(pred)
 
-            fitness += (reward + reward_extra) if self.version != 'V3' else reward_extra
+            fit_reward += 0
+            fitness += reward + reward_extra
             if self.version != 'V0':
                 explained = conv2.explain(self.version)
                 if sol_pred == 1.0:
@@ -113,20 +115,19 @@ class PoleBalanceConfig:
                     explanation_left.append(explained)
             else:
                 explanation_left, explanation_right = [None], [None]
-        if self.version == 'V3':      
-            fuzzifier.decide(explanation_right, explanation_left)
-            fuzzy_reward = fuzzifier.calculate_accuracy()
-            if self.help_fuzzy:
-                fitness += fuzzy_reward
-                explain_diff = np.abs(len(explanation_left) - len(explanation_right))
-                if explain_diff < 30:
-                    fitness += 500  
-                else:
-                    fitness += 0
+        # if self.version == 'V3':      
+        #     fuzzifier.decide(explanation_right, explanation_left)
+        #     fuzzy_reward = fuzzifier.calculate_accuracy()
+        #     if self.help_fuzzy:
+        #         explain_diff = np.abs(len(explanation_left) - len(explanation_right))
+        #         if explain_diff < 30:
+        #             fitness += fuzzy_reward 
+        #         else:
+        #             fitness += 0
         env.close()
         # fitness equalizer
         if self.version == 'V0':
             fitness = fitness*2
-        elif self.version == 'V3':
+        if self.version == 'V3':
             fitness = (fitness*2)/3
-        return fitness, explanation_right
+        return fitness, explanation_right, fit_reward

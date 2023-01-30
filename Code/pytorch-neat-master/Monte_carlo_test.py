@@ -9,25 +9,31 @@ import neat.experiments.pole_balancing.config as c
 from neat.experiments.pole_balancing.Conv2explain import Converter
 from neat.visualize import draw_net
 from neat.phenotype.feed_forward import FeedForwardNet
-import pickle
-from os import path
-
+import numpy as np
+from tqdm import tqdm
+import neat.utils as utils
 
 logger = logging.getLogger(__name__)
-
 logger.info(c.PoleBalanceConfig.DEVICE)
 neat = pop.Population(c.PoleBalanceConfig)
-solution, generation = neat.run()
 
-if __name__ == '__main__':
-    solution_path = './images/pole-balancing-solution.pkl'
-    if (not path.exists(solution_path)) and (c.PoleBalanceConfig.version == 'V0'):
-        with open(solution_path, 'wb') as f:
-            pickle.dump(solution, f)
-else:
-    c.PoleBalanceConfig.log_wandb = False
+solution_path = './images/pole-balancing-solutionV3.pkl'
+monte_runs = [25]
 
-def Best_run(solution, logger, name):
+# def setup(neat, config):
+#     if config:
+#         # Get Fitness of Every Genome
+#         for genome in neat.population:
+#             fitness, explanation = neat.Config.fitness_fn(genome)
+#             genome.fitness = max(0, fitness)
+#             genome.explanation = explanation
+
+#         best_genome = utils.get_best_genome(neat.population)
+#         return best_genome
+#     else:
+#         return neat
+
+def run(solution, logger, name):
     if solution is not None:
         if name == '__main__':
             logger.info('Found a Solution')
@@ -77,8 +83,8 @@ def Best_run(solution, logger, name):
                     explanation_right.append(explained)
                     pred_human = 'right'
                 
-                
-                logger.info('I can see ' + explained + '. Hence, I go ' + pred_human)
+                if name == '__main__':
+                    logger.info('I can see ' + explained + '. Hence, I go ' + pred_human)
             else:
                 explanation_right, explanation_left = [None], [None]
 
@@ -93,12 +99,33 @@ def Best_run(solution, logger, name):
                 logger.info(fuzzy_output)
                 logger.info(fuzzifier.network_predictions)
                 logger.info('Fuzzy system: ' + str(correct_fuzzy_predictions) + ', Explanation length:' + str(len(solution.explanation)))
-    return correct_fuzzy_predictions
-
-fitness = Best_run(solution, logger, __name__)
+            return correct_fuzzy_predictions, solution.fitness
+        return solution.reward, solution.fitness
 
 if __name__ == '__main__':
-    if c.PoleBalanceConfig.version != 'V0':
-        if input('Save Model?') == 'yes':
-            with open(solution_path.replace('.pkl', c.PoleBalanceConfig.version + '.pkl'), 'wb') as f:
-                pickle.dump(solution, f)
+
+    # with open(solution_path, 'rb') as f:
+    #     solution_neat = pickle.load(f)
+
+    # solution = setup(solution_neat, False)
+
+    explanation_accuracy = []
+    train_fitness = []
+    for total_runs in monte_runs:
+        explanation_run_accuracy = []
+        train_run_fitness = []
+        for i in tqdm(range(total_runs)):
+            neat = pop.Population(c.PoleBalanceConfig)
+            solution, generation = neat.run()
+            explanation, fitness = run(solution, logger, '--')
+            explanation_run_accuracy.append(explanation)
+            if c.PoleBalanceConfig.version == 'V1':
+                train_run_fitness.append(fitness - explanation)
+            else:
+                train_run_fitness.append(fitness)
+        explanation_accuracy.append(sum(explanation_run_accuracy)/total_runs)
+        train_fitness.append(sum(train_run_fitness)/total_runs)
+    logger.info('Explanation accuracy = ' + str(explanation_accuracy[0]))
+    logger.info('explanation_runs' + str(explanation_run_accuracy))
+    logger.info('Fitness' + str(train_fitness))
+    logger.info('All fitenesses' + str(train_run_fitness))

@@ -4,19 +4,9 @@ A PyTorch implementation of the NEAT (NeuroEvolution of Augmenting Topologies) m
 ### Experiments
 PyTorch-NEAT currently contains three built-in experiments: XOR, Single-Pole Balancing, and Car Mountain Climbing.
 
-##### XOR Experiment
-Run with the command: ```python xor_run.py```
-Will run up-to 150 generations with an initial population of 150 genomes. When/If a solution is found the solution network will be displayed along with statistics about the trial. Feel free to run for more than one trial - just increase the range in the outer for loop in the xor_run.py file.
-
 ##### Single Pole Balancing
 Run with the command: ```python pole_run.py```
 Will run up-to 150 generations with an initial population of 150 genomes. Runs in the OpenAI gym enviornment. When/If a solution is found the solution network will be displayed along with a rendered evalution in the OpenAI gym.
-
-##### Car Mountain Climbing Experiment
-Run with the command: ```python mountain_climb_run.py```
-Will run up-to 150 generations with an initial population of 150 genomes. Runs in the OpenAI gym enviornment. When/If a solution is found the solution network will be displayed along with a rendered evalution in the OpenAI gym.
-### An Experiment's Configuration File
-Each experiment requries a configuration file. The XOR experiment config file is broken down here:
 
 Import necessary items.
 ```python
